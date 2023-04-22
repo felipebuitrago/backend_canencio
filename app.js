@@ -20,6 +20,12 @@ app.use('/api/products', require('./app/routes/productos')) // products crud
 
 app.use('/api/proveedores', require('./app/routes/proveedor')) // proveedor crud
 
+app.use('/api/pacientes', require('./app/routes/paciente')) // pacientes crud
+
+app.use('/api/categorias', require('./app/routes/categoria')) // categoria crud
+
+app.use('/api/almacenes', require('./app/routes/almacen')) // almacen crud
+
 //end routes
 
 app.get('*', (req, res) => {
