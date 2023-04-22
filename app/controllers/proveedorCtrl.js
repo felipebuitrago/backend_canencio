@@ -23,7 +23,6 @@ const readProveedores = async(req, res = response) => {
     const token = await generarJWT(req.uid, req.name);
     
     let result = await Proveedor.find();
-    //console.log(result);
     
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readProveedores $$$$$$$",

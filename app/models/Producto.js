@@ -13,16 +13,16 @@ const ProductoSchema = Schema({
         type: String,
         required: true
     },
-    almacen:{
-        type: String,
-        required: true
-    },
     stock:{
         type: Number,
         required: true
     },
     isFaja:{
         type: Boolean
+    },
+    categoria:{
+        ref: 'Categoria',
+        type: Schema.Types.ObjectId   //referencia coleccion categorias
     },
     proveedor:{
         ref: 'Proveedor',
@@ -31,7 +31,11 @@ const ProductoSchema = Schema({
     registradopor:{
         ref: 'Usuario',
         type: Schema.Types.ObjectId  //referencia a usuario que creo producto
-    }
+    },
+    almacen:[{
+        ref: 'Almacen',
+        type: Schema.Types.ObjectId  //referencia a almacenes donde está el producto
+    }]
 })
 
 module.exports = model('Productos',ProductoSchema)

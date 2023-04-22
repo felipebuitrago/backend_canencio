@@ -26,6 +26,9 @@ app.use('/api/categorias', require('./app/routes/categoria')) // categoria crud
 
 app.use('/api/almacenes', require('./app/routes/almacen')) // almacen crud
 
+app.use('/api/inventario', require('./app/routes/inventario')) // inventario
+                                    //  hacer movimiento, ver todos los movimientos
+
 //end routes
 
 app.get('*', (req, res) => {

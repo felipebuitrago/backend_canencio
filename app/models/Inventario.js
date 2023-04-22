@@ -2,12 +2,28 @@ const { Schema, model } = require('mongoose')
 
 const InventarioSchema = Schema({
     
-    /*idpersonalizado: {
+    tipo_transaccion: {
         type: String,
         required: true
-    },*/
-    tipodetransaccion: {
-        type: String,
+    },
+    producto:{
+        type: String,        
+        required: true
+    },
+    presentacion:{
+        type: String,        
+        required: true
+    },
+    almacen:{
+        type: String,        
+        required: true
+    },
+    paciente_proveedor:{
+        type: String,        
+        required: true
+    },
+    factura:{
+        type: String,        
         required: true
     },
     fecha:{
@@ -21,14 +37,14 @@ const InventarioSchema = Schema({
     factura:{
         type: String
     },
-    registradopor:{
-        ref: 'Usuario',
-        type: Schema.Types.ObjectId  //referencia a usuario que creo producto
+    registrado_por:{
+        type: String,
+        required: true
     },
-    producto:{
-        ref: 'Producto',
-        type: Schema.Types.ObjectId  //referencia a producto ingresado o egresado
-    },
+    nota:{
+        type: String,        
+        required: true
+    }
 })
 
 module.exports = model('Inventario',InventarioSchema)

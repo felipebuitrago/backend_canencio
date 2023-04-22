@@ -9,10 +9,6 @@ const ProveedorSchema = Schema({
     contacto: {
         type: String,
         required: true
-    },
-    cc: {
-        type: String,
-        required: true
     }
 })
 
