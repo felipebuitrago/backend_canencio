@@ -1,1 +1,1 @@
-api para la aplicación de inventario del centro de estetica Juan Canencio en Neiva CO
+API para la aplicación de inventario del centro de estetica Juan Canencio en Neiva CO
