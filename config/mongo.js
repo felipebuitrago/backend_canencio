@@ -8,10 +8,10 @@ const dbConnect = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
-        console.log("$$$$$$$$$$ CONNECTED TO MONGODB $$$$$$$$$");
+        console.log("|$$$$$$$$$$| CONNECTED TO MONGODB |$$$$$$$$$$|");
     } catch (err) {
         
-        console.log("$$$$$$$ ERROR $$$$$$$$$$");
+        console.log("|$$$$$$$$$$| ERROR |$$$$$$$$$$|");
         process.exit();
     }
 }
