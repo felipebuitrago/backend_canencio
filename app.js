@@ -29,6 +29,8 @@ app.use('/api/almacenes', require('./app/routes/almacen')) // almacen crud
 app.use('/api/inventario', require('./app/routes/inventario')) // inventario
                                     //  hacer movimiento, ver todos los movimientos
 
+app.use('/api/usuarios', require('./app/routes/usuarios')) //administracion de usuarios
+
 //end routes
 
 app.get('*', (req, res) => {
