@@ -52,7 +52,7 @@ const readUsuarios = async(req, res = response) => {
 
     const token = await generarJWT(req.uid, req.name);
     
-    let result = await Usuario.find();
+    let result = await Usuario.find().select(["name","email","_id"]);
     
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readUsuarios $$$$$$$",
@@ -66,7 +66,7 @@ const readUsuarioById = async(req=request, res = response) => {
 
     const token = await generarJWT(req.uid, req.name);
 
-    let result = await Usuario.findById(req.params.id);
+    let result = await Usuario.findById(req.params.id).select(["name","email","_id"]);
 
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readUsuarioById $$$$$$$",
@@ -85,7 +85,7 @@ const updateUsuario = async(req, res = response) => {
         const salt = bcrypt.genSaltSync(10);
         req.body.password = bcrypt.hashSync(password, salt)
     }
-    let result = await Usuario.findByIdAndUpdate(req.params.id,req.body);
+    let result = await Usuario.findByIdAndUpdate(req.params.id,req.body).select(["name","email","_id"]);
 
     return res.status(201).json({
         msg:"$$$$$$$ U are going through updateUsuario $$$$$$$",
