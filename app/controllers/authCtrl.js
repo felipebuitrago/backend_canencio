@@ -70,7 +70,10 @@ const loginUsuario = async (req, res) => {
             })
         }
         const token = await generarJWT(dbUser.id,dbUser.name);
-
+        console.log("|$$$| Login |$$$|", dbUser.name, 
+        '|$$$|', req.ip, 
+        '|$$$|', req.originalUrl, req.method, 
+        '|$$$|', new Date(), '|$$$|');
         return res.json({
             ok: true,
             uid: dbUser.id,
@@ -97,6 +100,11 @@ const revalidarToken = async (req, res) => {
 
     //generar jwt
     const token = await generarJWT(uid, dbUser.name);
+
+    console.log("|$$$| ReValidarJWT |$$$|", dbUser.name, 
+        '|$$$|', req.ip, 
+        '|$$$|', req.originalUrl, req.method, 
+        '|$$$|', new Date(), '|$$$|');
 
     return res.json({
         ok: true,
