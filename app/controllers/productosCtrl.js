@@ -13,13 +13,6 @@ const aggregations = [{
       }
     }, {
       '$lookup': {
-        'from': 'usuarios', 
-        'localField': 'registradopor', 
-        'foreignField': '_id', 
-        'as': 'registradopor'
-      }
-    },{
-      '$lookup': {
         'from': 'almacenes', 
         'localField': 'almacen', 
         'foreignField': '_id', 
@@ -34,15 +27,10 @@ const aggregations = [{
       }
     }, {
       '$unwind': {
-        'path': '$registradopor'  
-      }
-    }, {
-      '$unwind': {
         'path': '$proveedor'
       }
     }, {
       '$unset': [
-        'registradopor.password','registradopor.__v', 'registradopor._id',
         'proveedor.__v', 'proveedor._id',
         'almacen.__v','almacen._id','almacen.location',
         'categoria.__v','categoria._id','__v'
@@ -85,6 +73,7 @@ const readProductos = async(req, res = response) => {
     const token = await generarJWT(req.uid, req.name);
 
     let result = await Producto.aggregate(aggregations)
+    //let result = await Producto.find();
 
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readProductos $$$$$$$",

@@ -52,7 +52,7 @@ const readUsuarios = async(req, res = response) => {
 
     const token = await generarJWT(req.uid, req.name);
     
-    let result = await Usuario.find().select(["name","email","_id"]);
+    let result = await Usuario.find().select(["name","email","_id","rol"]);
     
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readUsuarios $$$$$$$",
