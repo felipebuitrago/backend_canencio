@@ -66,7 +66,7 @@ const readUsuarioById = async(req=request, res = response) => {
 
     const token = await generarJWT(req.uid, req.name);
 
-    let result = await Usuario.findById(req.params.id).select(["name","email","_id"]);
+    let result = await Usuario.findById(req.params.id).select(["name","email","_id","rol"]);
 
     return res.status(201).json({
         msg:"$$$$$$$ U are going through readUsuarioById $$$$$$$",

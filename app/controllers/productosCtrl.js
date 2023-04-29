@@ -44,26 +44,43 @@ const crearProducto = async(req, res = response) => {
 
     const token = await generarJWT(req.uid, req.name);
 
-    let producto = {
-        registradopor: req.uid,
+    //si son varios almacenes crear instancia en cada uno
+    if(req.body.almacen.length > 1 && typeof req.body.almacen !== "string"){
+      req.body.almacen.map(async(almacen)=>{
+        let producto = {
+          proveedor: req.body.proveedor,
+          stock: 0,
+          almacen: almacen,//difente almacen e id unica diferencia
+          presentacion: req.body.presentacion,
+          nombre: req.body.nombre,
+          categoria:req.body.categoria
+        }
+        const prod = new Producto(producto);
+        await prod.save();
+      })
+      return res.status(201).json({
+        msg:"$$$$$$$ U are going through crearProducto $$$$$$$",
+        newToken: token,
+      })
+    }else{
+      let producto = {
         proveedor: req.body.proveedor,
-        isFaja: req.body.isFaja,
-        stock: req.body.stock,
+        stock: 0,
         almacen: req.body.almacen,
         presentacion: req.body.presentacion,
         nombre: req.body.nombre,
-        idpersonalizado: req.body.idpersonalizado,
         categoria:req.body.categoria
+      }
+  
+      const result = new Producto(producto);
+      await result.save();
+  
+      return res.status(201).json({
+          msg:"$$$$$$$ U are going through crearProducto $$$$$$$",
+          newToken: token,
+          result 
+      })
     }
-
-    const result = new Producto(producto);
-    await result.save();
-
-    return res.status(201).json({
-        msg:"$$$$$$$ U are going through crearProducto $$$$$$$",
-        newToken: token,
-        result 
-    })
 }
 
 
