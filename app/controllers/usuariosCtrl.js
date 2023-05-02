@@ -5,7 +5,7 @@ const  Usuario  = require("../models/Usuario");
 
 //CREA UN NUEVO Usuario
 const crearUsuario = async(req, res = response) => {
-    const { email, name, password } = req.body;
+    const { email, password, } = req.body;
 
     try {    
         let usuario = await Usuario.findOne({email:email})
@@ -27,14 +27,13 @@ const crearUsuario = async(req, res = response) => {
         const token = await generarJWT(dbUser.id,dbUser.name)
 
         //crear usuario en db
-        await dbUser.save()
+        const result = await dbUser.save()
 
         //response
         return res.status(201).json({
             ok: true,
             uid: dbUser.id,
-            name,
-            email,
+            result,
             token
         })
     } catch (error) {
@@ -85,7 +84,7 @@ const updateUsuario = async(req, res = response) => {
         const salt = bcrypt.genSaltSync(10);
         req.body.password = bcrypt.hashSync(password, salt)
     }
-    let result = await Usuario.findByIdAndUpdate(req.params.id,req.body).select(["name","email","_id"]);
+    let result = await Usuario.findByIdAndUpdate(req.params.id,req.body).select(["name","email","_id","rol"]);
 
     return res.status(201).json({
         msg:"$$$$$$$ U are going through updateUsuario $$$$$$$",

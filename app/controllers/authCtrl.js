@@ -78,6 +78,7 @@ const loginUsuario = async (req, res) => {
             ok: true,
             uid: dbUser.id,
             name: dbUser.name,
+            rol: dbUser.rol,
             email: dbUser.email,
             token
         })
@@ -111,6 +112,7 @@ const revalidarToken = async (req, res) => {
         uid,
         name: dbUser.name,
         email: dbUser.email,
+        rol: dbUser.rol,
         token
     })
 }
