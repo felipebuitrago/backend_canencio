@@ -3,7 +3,8 @@ const { crearProducto,
     readProductos,
     readProductoById,
     updateProducto,
-    deleteProducto } = require('../controllers/productosCtrl')
+    deleteProducto,
+    trasladarProducto } = require('../controllers/productosCtrl')
 const { validarJWT } = require('../middlewares/validarJwt')
 
 
@@ -23,5 +24,9 @@ router.put('/update/:id', validarJWT, updateProducto);
 
 //delete product
 router.delete('/delete/:id', validarJWT, deleteProducto);
+
+//trasladar product a otro almacen
+router.post('/trasladar', validarJWT, trasladarProducto);
+
 
 module.exports = router;

@@ -32,7 +32,7 @@ const aggregations = [{
     }, {
       '$unset': [
         'proveedor.__v', 'proveedor._id',
-        'almacen.__v','almacen._id','almacen.location',
+        'almacen.__v','almacen.location',
         'categoria.__v','categoria._id','__v'
       ]
     }
@@ -153,10 +153,41 @@ const deleteProducto = async(req, res = response) => {
     })
 }
 
+//TRASLADAR PRODUCTO
+const trasladarProducto = async(req, res = response) => {
+
+  const token = await generarJWT(req.uid, req.name);
+  
+  const {idProductoOrigen, nombreProductoOrigen, cantidad, stockActualOrigen, presentacion, almacenDestino} = req.body;
+  
+  let result = await Producto.find();
+  result.map(async(current, index) => {
+
+    if(current.nombre.toLowerCase() === nombreProductoOrigen.toLowerCase() && current.presentacion.toLowerCase() === presentacion.toLowerCase() && current.almacen.equals(almacenDestino)){
+      
+      const newStockDestino = parseInt(current.stock) + parseInt(cantidad); 
+      await Producto.findByIdAndUpdate(current._id.toString(),{stock:newStockDestino});
+
+      const newStockOrigen = parseInt(stockActualOrigen) - parseInt(cantidad); 
+      await Producto.findByIdAndUpdate(idProductoOrigen,{stock:newStockOrigen});
+    }
+  })
+
+  let result2 = await Producto.aggregate(aggregations)
+
+
+  return res.status(201).json({
+      msg:"$$$$$$$ U are going through trasladarProducto $$$$$$$",
+      newToken: token,
+      result:result2
+  })
+}
+
 module.exports = {
     crearProducto,
     readProductos,
     readProductoById,
     updateProducto,
-    deleteProducto
+    deleteProducto,
+    trasladarProducto
 }
