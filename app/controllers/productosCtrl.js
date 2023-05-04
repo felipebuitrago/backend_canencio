@@ -31,9 +31,9 @@ const aggregations = [{
       }
     }, {
       '$unset': [
-        'proveedor.__v', 'proveedor._id',
+        'proveedor.__v',
         'almacen.__v','almacen.location',
-        'categoria.__v','categoria._id','__v'
+        'categoria.__v','__v'
       ]
     }
 ]
@@ -158,29 +158,71 @@ const trasladarProducto = async(req, res = response) => {
 
   const token = await generarJWT(req.uid, req.name);
   
-  const {idProductoOrigen, nombreProductoOrigen, cantidad, stockActualOrigen, presentacion, almacenDestino} = req.body;
+  const {idProductoOrigen, nombreProductoOrigen, cantidad, stockActualOrigen, presentacion, almacenDestino, proveedorID, categoriasIDs} = req.body;
   
-  let result = await Producto.find();
-  result.map(async(current, index) => {
-
-    if(current.nombre.toLowerCase() === nombreProductoOrigen.toLowerCase() && current.presentacion.toLowerCase() === presentacion.toLowerCase() && current.almacen.equals(almacenDestino)){
+  let existe = await Producto.aggregate(
+    [
+      {
+        $lookup: {
+          from: "almacenes",
+          localField: "almacen",
+          foreignField: "_id",
+          as: "almacen"
+        }
+      },
+      {
+        $match:{
+          nombre: nombreProductoOrigen,
+          presentacion: presentacion
+        }
+      }
+    ])
+  
+  if (existe.length === 2) {
+    existe.map(async(current,index) => {
       
-      const newStockDestino = parseInt(current.stock) + parseInt(cantidad); 
-      await Producto.findByIdAndUpdate(current._id.toString(),{stock:newStockDestino});
+      if(current.almacen[0]._id.equals(almacenDestino)){
+  
+        const newStockDestino = parseInt(current.stock) + parseInt(cantidad); 
+        await Producto.findByIdAndUpdate(current._id.toString(),{stock:newStockDestino});
+  
+        const newStockOrigen = parseInt(stockActualOrigen) - parseInt(cantidad); 
+        await Producto.findByIdAndUpdate(idProductoOrigen,{stock:newStockOrigen});
 
-      const newStockOrigen = parseInt(stockActualOrigen) - parseInt(cantidad); 
-      await Producto.findByIdAndUpdate(idProductoOrigen,{stock:newStockOrigen});
+        let result2 = await Producto.aggregate(aggregations)
+
+        return res.status(201).json({
+            msg:"$$$$$$$ U are going through trasladarProducto $$$$$$$",
+            newToken: token,
+            result:result2
+        })
+      }
+    })
+  }
+  else if(existe.length === 1){
+    let producto = {
+      stock: cantidad,
+      nombre: nombreProductoOrigen,
+      presentacion: presentacion,
+      proveedor: proveedorID,
+      categoria:  categoriasIDs,
+      almacen: almacenDestino,
     }
-  })
-
-  let result2 = await Producto.aggregate(aggregations)
-
-
-  return res.status(201).json({
-      msg:"$$$$$$$ U are going through trasladarProducto $$$$$$$",
-      newToken: token,
-      result:result2
-  })
+    const productoDB = new Producto(producto);
+    await productoDB.save();
+  
+    //actualiza stock del producto donde se toman las existencias
+    const newStockOrigen = parseInt(stockActualOrigen) - parseInt(cantidad); 
+    await Producto.findByIdAndUpdate(idProductoOrigen,{stock:newStockOrigen});
+    
+    let result2 = await Producto.aggregate(aggregations)
+  
+    return res.status(201).json({
+        msg:"$$$$$$$ U are going through trasladarProducto $$$$$$$",
+        newToken: token,
+        result:result2
+    })
+  }  
 }
 
 module.exports = {
