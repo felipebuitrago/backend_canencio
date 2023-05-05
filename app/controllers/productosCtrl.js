@@ -1,7 +1,8 @@
 const { response } = require("express");
 const mongoose = require("mongoose");
 const  generarJWT  = require("../helpers/jwt");
-const Producto = require('../models/Producto')
+const Producto = require('../models/Producto');
+const Inventario = require('../models/Inventario');
 
 //query para joins y quitar ciertos campos
 const aggregations = [{
@@ -160,6 +161,35 @@ const trasladarProducto = async(req, res = response) => {
   
   const {idProductoOrigen, nombreProductoOrigen, cantidad, stockActualOrigen, presentacion, almacenDestino, proveedorID, categoriasIDs} = req.body;
   
+  //realizar movimientos de egreso e ingreso pertinentes
+  const movimientoEgreso = new Inventario({
+    fecha: new Date().toLocaleDateString(),
+    tipo_transaccion: "Egreso",
+    producto: nombreProductoOrigen,
+    presentacion: presentacion,
+    cantidad: cantidad,
+    almacen: "traslado",
+    paciente_proveedor: "Trasladado a otro Almacen",
+    factura: "Factura",
+    registrado_por: "usuario",
+    nota: "Trasladado a otro Almacen"
+  });
+  const movimientoIngreso = new Inventario({
+    fecha: new Date().toLocaleDateString(),
+    tipo_transaccion: "Ingreso",
+    producto: nombreProductoOrigen,
+    presentacion: presentacion,
+    cantidad: cantidad,
+    almacen: "traslado",
+    paciente_proveedor: "Trasladado desde Almacen",
+    factura: "Factura",
+    registrado_por: "usuario",
+    nota: "Trasladado desde Almacen"
+  }); 
+  await movimientoEgreso.save();
+  await movimientoIngreso.save();
+
+  //buscar productos con el mismo nombre y talla 
   let existe = await Producto.aggregate(
     [
       {
@@ -201,7 +231,7 @@ const trasladarProducto = async(req, res = response) => {
   }
   else if(existe.length === 1){
     let producto = {
-      stock: cantidad,
+      stock: parseInt(cantidad),
       nombre: nombreProductoOrigen,
       presentacion: presentacion,
       proveedor: proveedorID,
@@ -223,6 +253,7 @@ const trasladarProducto = async(req, res = response) => {
         result:result2
     })
   }  
+
 }
 
 module.exports = {

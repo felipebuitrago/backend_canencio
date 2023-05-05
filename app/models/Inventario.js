@@ -22,12 +22,8 @@ const InventarioSchema = Schema({
         type: String,        
         required: true
     },
-    factura:{
-        type: String,        
-        required: true
-    },
     fecha:{
-        type: Date,
+        type: String,
         required: true
     },
     cantidad:{
