@@ -159,37 +159,19 @@ const trasladarProducto = async(req, res = response) => {
 
   const token = await generarJWT(req.uid, req.name);
   
-  const {idProductoOrigen, nombreProductoOrigen, cantidad, stockActualOrigen, presentacion, almacenDestino, proveedorID, categoriasIDs} = req.body;
+  const {idProductoOrigen, 
+    nombreProductoOrigen, 
+    cantidad, 
+    stockActualOrigen, 
+    presentacion, 
+    almacenDestino, 
+    proveedorID, 
+    categoriasIDs, 
+    almacenOrigenLiteral, 
+    tercero, 
+    almacenDestinoLiteral} = req.body;
   
-  //realizar movimientos de egreso e ingreso pertinentes
-  const movimientoEgreso = new Inventario({
-    fecha: new Date().toLocaleDateString(),
-    tipo_transaccion: "Egreso",
-    producto: nombreProductoOrigen,
-    presentacion: presentacion,
-    cantidad: cantidad,
-    almacen: "traslado",
-    paciente_proveedor: "Trasladado a otro Almacen",
-    factura: "Factura",
-    registrado_por: "usuario",
-    nota: "Trasladado a otro Almacen"
-  });
-  const movimientoIngreso = new Inventario({
-    fecha: new Date().toLocaleDateString(),
-    tipo_transaccion: "Ingreso",
-    producto: nombreProductoOrigen,
-    presentacion: presentacion,
-    cantidad: cantidad,
-    almacen: "traslado",
-    paciente_proveedor: "Trasladado desde Almacen",
-    factura: "Factura",
-    registrado_por: "usuario",
-    nota: "Trasladado desde Almacen"
-  }); 
-  await movimientoEgreso.save();
-  await movimientoIngreso.save();
-
-  let existe2 = await Producto.aggregate(
+  let destino = await Producto.aggregate(
     [
       {
         $match:{
@@ -199,15 +181,43 @@ const trasladarProducto = async(req, res = response) => {
         }
       }
   ]);
+
+  //realizar movimientos de egreso e ingreso pertinentes
+  const movimientoEgreso = new Inventario({
+    fecha: new Date().toLocaleDateString(),
+    tipo_transaccion: "Egreso",
+    producto: nombreProductoOrigen,
+    presentacion: presentacion,
+    cantidad: cantidad,
+    almacen: almacenOrigenLiteral,
+    paciente_proveedor: tercero,
+    factura: "traslado",
+    registrado_por: req.name,
+    nota: "Trasladado hacia almacen: ".concat(almacenDestinoLiteral)
+  });
+  const movimientoIngreso = new Inventario({
+    fecha: new Date().toLocaleDateString(),
+    tipo_transaccion: "Ingreso",
+    producto: nombreProductoOrigen,
+    presentacion: presentacion,
+    cantidad: cantidad,
+    almacen: almacenDestinoLiteral,
+    paciente_proveedor: tercero,
+    factura: "traslado",
+    registrado_por: req.name,
+    nota: "Trasladado desde almacen: ".concat(almacenOrigenLiteral)
+  }); 
+  await movimientoEgreso.save();
+  await movimientoIngreso.save();
   
-  if(existe2.length === 1){
-    const newStockDestino = parseInt(existe2[0].stock) + parseInt(cantidad); 
-    await Producto.findByIdAndUpdate(existe2[0]._id.toString(),{stock:newStockDestino});
+  if(destino.length === 1){
+    const newStockDestino = parseInt(destino[0].stock) + parseInt(cantidad); 
+    await Producto.findByIdAndUpdate(destino[0]._id.toString(),{stock:newStockDestino});
   
     const newStockOrigen = parseInt(stockActualOrigen) - parseInt(cantidad); 
     await Producto.findByIdAndUpdate(idProductoOrigen,{stock:newStockOrigen}); 
   }
-  else if(existe2.length === 0){
+  else if(destino.length === 0){
 
     let producto = {
         stock: parseInt(cantidad),
