@@ -16,7 +16,7 @@ const crearMovimiento = async(req, res = response) => {
         presentacion: req.body.presentacion,
         almacen: req.body.almacen,
         paciente_proveedor: req.body.tercero,
-        factura: "req.body.factura",
+        factura: req.body.factura,
         fecha: req.body.fecha,
         cantidad: req.body.cantidad,
         nota: req.body.nota

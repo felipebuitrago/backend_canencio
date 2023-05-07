@@ -1,5 +1,6 @@
 const { response } = require("express");
 const mongoose = require("mongoose");
+const dayjs = require('dayjs');
 const  generarJWT  = require("../helpers/jwt");
 const Producto = require('../models/Producto');
 const Inventario = require('../models/Inventario');
@@ -184,7 +185,7 @@ const trasladarProducto = async(req, res = response) => {
 
   //realizar movimientos de egreso e ingreso pertinentes
   const movimientoEgreso = new Inventario({
-    fecha: new Date().toLocaleDateString(),
+    fecha: dayjs().format('DD/MM/YYYY'),
     tipo_transaccion: "Egreso",
     producto: nombreProductoOrigen,
     presentacion: presentacion,
@@ -196,7 +197,7 @@ const trasladarProducto = async(req, res = response) => {
     nota: "Trasladado hacia almacen: ".concat(almacenDestinoLiteral)
   });
   const movimientoIngreso = new Inventario({
-    fecha: new Date().toLocaleDateString(),
+    fecha: dayjs().format('DD/MM/YYYY'),
     tipo_transaccion: "Ingreso",
     producto: nombreProductoOrigen,
     presentacion: presentacion,
